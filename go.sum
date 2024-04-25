@@ -1,0 +1,9 @@
+github.com/mattn/go-runewidth v0.0.15 h1:UNAjwbU9l54TA3KzvqLGxwWjHmMgBUVhBiTjelZgg3U=
+github.com/mattn/go-runewidth v0.0.15/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
+github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
+github.com/rivo/uniseg v0.4.7 h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=
+github.com/rivo/uniseg v0.4.7/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
+zgo.at/termtext v1.3.0 h1:aJRg7PJOJHJCsWnzmYk8iLWP/bd9rfw9zOmyMNxzyXk=
+zgo.at/termtext v1.3.0/go.mod h1:CBx+HpG2ijB3W0Bd4CK8UtzcsXw+EmvvlhQUyQpZO+E=
+zgo.at/zstd v0.0.0-20240425000522-78bcf900e0a4 h1:/13W9C05Uwi49SX7aKN7O8uI5zZcbt2CXq+qHDD73Wo=
+zgo.at/zstd v0.0.0-20240425000522-78bcf900e0a4/go.mod h1:o/Q8+EtSahHnfkbB3t8wXE0FnoDTmJ0sBDlzezv9XeM=

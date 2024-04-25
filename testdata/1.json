@@ -1,0 +1,19 @@
+{
+    "type": "system",
+    "data": {
+        "collected_at":   "0001-01-01T00:00:00Z",
+        "cpu_freq":       [1100, 1100, 1100, 1099, 1099, 1100, 1100, 1099],
+        "cpu_num":        8,
+        "cpu_use":        [30, 30, 30, 30, 30, 30, 30, 30],
+        "disk_available": [4004416, 244914008, 100808, 976728192],
+        "disk_use":       [1064, 198791028, 138, 969447296],
+        "disks":          ["/dev/shm", "/", "/boot/efi", "/mnt"],
+        "mem_available":  8008836,
+        "mem_cache":      3829832,
+        "mem_use":        5993472,
+        "server_id":      0,
+        "swap_available": 0,
+        "swap_cache":     0,
+        "swap_use":       0
+    }
+}
