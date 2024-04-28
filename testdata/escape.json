@@ -1,0 +1,7 @@
+{
+    "backtab \b backtab \b":   1,
+    "formfeed \f formfeed \f": 1,
+    "newline \n newline \n":   1,
+    "return \r return \r":     1,
+    "tab \t tab \t":           1
+}

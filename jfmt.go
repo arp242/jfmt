@@ -33,6 +33,16 @@ func NewFormatter(width int, ident string) *Formatter {
 
 var widthCache = make(map[string]int)
 
+func init() {
+	termtext.Widths = map[rune]int{
+		'\b': 2,
+		'\f': 2,
+		'\n': 2,
+		'\r': 2,
+		'\t': 2,
+	}
+}
+
 // Calling termtext.Width is pretty slow; about ~75% of all time is spent
 // there. Caching the results improves things a bit.
 //
@@ -173,13 +183,6 @@ func (f *Formatter) any(w io.Writer, j any) bool {
 	}
 }
 
-// TODO, with just one entry, format as:
-//
-//	"b": [{
-//		"x": {"type": "integer", "value": "1"}
-//	}]
-//
-// Also with arrays.
 func (f *Formatter) arr(w io.Writer, a []any) bool {
 	var hasobj, multiline bool
 	if len(a) > 1 {
@@ -304,6 +307,12 @@ func (f *Formatter) objNL(w io.Writer, m map[string]any) bool {
 		}
 		kk, _ := json.Marshal(k)
 		var pad string
+		// TODO: this should also pad multiline arrays, but only if it contains
+		// wrapped values (as in schemastore-global.json) and not if every entry
+		// is on its one line (as in toml-test-spec-example-1.json)
+		//
+		// The trick bit here is correctly aligning the indent; we don't have
+		// this information yet when writing the value above.
 		if ll := l - strWidth(string(kk)); multi[k] == 0 && ll > 0 {
 			pad = strings.Repeat(" ", ll)
 		}

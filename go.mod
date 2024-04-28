@@ -1,9 +1,9 @@
 module zgo.at/jfmt
 
-go 1.22
+go 1.18
 
 require (
-	zgo.at/termtext v1.3.0
+	zgo.at/termtext v1.4.0
 	zgo.at/zstd v0.0.0-20240425000522-78bcf900e0a4
 )
 

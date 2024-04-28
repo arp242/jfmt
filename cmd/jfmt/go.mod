@@ -3,7 +3,7 @@
 
 module zgo.at/jfmt/cmd/jfmt
 
-go 1.22
+go 1.18
 
 require (
 	zgo.at/jfmt v0.0.0-00010101000000-000000000000
@@ -17,6 +17,6 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	golang.org/x/sys v0.14.0 // indirect
 	golang.org/x/term v0.14.0 // indirect
-	zgo.at/termtext v1.3.0 // indirect
+	zgo.at/termtext v1.4.0 // indirect
 	zgo.at/zstd v0.0.0-20240425000522-78bcf900e0a4 // indirect
 )
