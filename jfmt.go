@@ -2,11 +2,10 @@ package jfmt
 
 import (
 	"bytes"
-	"cmp"
 	"encoding/json"
 	"fmt"
 	"io"
-	"slices"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -295,12 +294,14 @@ func (f *Formatter) objNL(w io.Writer, m map[string]any) bool {
 	}
 	l += 2 /// Quote marks and :
 
-	slices.Sort(keys)
-	slices.SortStableFunc(keys, func(a, b string) int {
-		// TODO: maybe also sort on object size (longer ones go later)? Need
-		// to see how well that works.
-		return cmp.Compare(multi[a], multi[b])
-	})
+	// TODO: maybe also sort on object size (longer ones go later)? Need
+	// to see how well that works.
+	sort.Strings(keys)
+	sort.SliceStable(keys, func(i, j int) bool { return multi[keys[i]] > multi[keys[j]] })
+	// Go 1.21
+	//slices.Sort(keys)
+	//slices.SortStableFunc(keys, func(a, b string) int { return cmp.Compare(multi[a], multi[b]) })
+
 	for i, k := range keys {
 		if i > 0 {
 			fmt.Fprint(w, ",\n")
