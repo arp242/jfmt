@@ -50,7 +50,7 @@ func main() {
 	if !length.Set() {
 		width, _, _ = zli.TerminalSize(os.Stdout.Fd())
 	}
-	ff := jfmt.NewFormatter(width, indent.String())
+	ff := jfmt.NewFormatter(width, "", indent.String())
 	if write.Bool() {
 		*color.Pointer() = "never"
 	}

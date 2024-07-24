@@ -15,7 +15,7 @@ import (
 )
 
 type Formatter struct {
-	indentStr           string
+	prefix, indentStr   string
 	width               int
 	hlKey, hlStr, hlNum [2]string
 	hlBool, hlNull      [2]string
@@ -26,8 +26,8 @@ type Formatter struct {
 	key           string
 }
 
-func NewFormatter(width int, ident string) *Formatter {
-	return &Formatter{width: width, indentStr: ident}
+func NewFormatter(width int, prefix, ident string) *Formatter {
+	return &Formatter{width: width, prefix: prefix, indentStr: ident}
 }
 
 var widthCache = make(map[string]int)
@@ -137,7 +137,7 @@ func (f *Formatter) FormatString(j string) (string, error) {
 
 func (f *Formatter) indent(mod int) string {
 	f.level += mod
-	return strings.Repeat(f.indentStr, f.level)
+	return f.prefix + strings.Repeat(f.indentStr, f.level)
 
 }
 
@@ -198,13 +198,13 @@ func (f *Formatter) arr(w io.Writer, a []any) bool {
 	}
 
 	var (
-		start = f.keyCol + strWidth(f.key) + len(f.indentStr)*f.level +
+		start = f.keyCol + strWidth(f.key) + len(f.prefix) + len(f.indentStr)*f.level +
 			5 /// Quotes, :, space, [
 		l = start
 	)
 	if start < 0 {
-		panic(fmt.Sprintf("NEGATIVE START (%d): f.keyCol=%d  f.key=%q  f.indentStr=%q  f.level=%d",
-			start, f.keyCol, f.key, f.indentStr, f.level))
+		panic(fmt.Sprintf("NEGATIVE START (%d): f.keyCol=%d  f.key=%q  f.prefix=%q  f.indentStr=%q  f.level=%d",
+			start, f.keyCol, f.key, f.prefix, f.indentStr, f.level))
 	}
 	fmt.Fprint(w, "[")
 	if hasobj {
@@ -244,7 +244,7 @@ func (f *Formatter) obj(w io.Writer, m map[string]any) bool {
 	}
 
 	var (
-		l = len(f.indentStr) * f.level
+		l = len(f.prefix) + len(f.indentStr)*f.level
 		b = new(strings.Builder)
 	)
 	fmt.Fprint(b, "{")

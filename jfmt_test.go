@@ -28,7 +28,7 @@ func Test(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			have, err := NewFormatter(100, "    ").FormatString(string(in))
+			have, err := NewFormatter(100, "", "    ").FormatString(string(in))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -45,7 +45,7 @@ func Benchmark(b *testing.B) {
 		b.Fatal(err)
 	}
 
-	ff := NewFormatter(80, "    ")
+	ff := NewFormatter(80, "", "    ")
 	in := string(d)
 
 	b.ResetTimer()
