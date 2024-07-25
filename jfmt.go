@@ -24,13 +24,12 @@ type Formatter struct {
 	didTop        bool
 	keyCol, level int
 	key           string
+	widthCache    map[string]int
 }
 
 func NewFormatter(width int, prefix, ident string) *Formatter {
-	return &Formatter{width: width, prefix: prefix, indentStr: ident}
+	return &Formatter{width: width, prefix: prefix, indentStr: ident, widthCache: make(map[string]int)}
 }
-
-var widthCache = make(map[string]int)
 
 func init() {
 	termtext.Widths = map[rune]int{
@@ -46,12 +45,13 @@ func init() {
 // there. Caching the results improves things a bit.
 //
 // TODO: be a bit smarter so we just don't call termtext.Width() that often.
-func strWidth(s string) int {
-	if w, ok := widthCache[s]; ok {
+func (f *Formatter) strWidth(s string) int {
+	if w, ok := f.widthCache[s]; ok {
 		return w
 	}
+
 	w := termtext.Width(s)
-	widthCache[s] = w
+	f.widthCache[s] = w
 	return w
 }
 
@@ -198,7 +198,7 @@ func (f *Formatter) arr(w io.Writer, a []any) bool {
 	}
 
 	var (
-		start = f.keyCol + strWidth(f.key) + len(f.prefix) + len(f.indentStr)*f.level +
+		start = f.keyCol + f.strWidth(f.key) + len(f.prefix) + len(f.indentStr)*f.level +
 			5 /// Quotes, :, space, [
 		l = start
 	)
@@ -224,7 +224,7 @@ func (f *Formatter) arr(w io.Writer, a []any) bool {
 		}
 		b := new(bytes.Buffer)
 		f.any(b, aa)
-		l += strWidth(b.String()) + 2
+		l += f.strWidth(b.String()) + 2
 		w.Write(b.Bytes())
 	}
 	if hasobj {
@@ -256,7 +256,7 @@ func (f *Formatter) obj(w io.Writer, m map[string]any) bool {
 		fmt.Fprint(b, `"`, f.hlKey[0], string(kk[1:len(kk)-1]), f.hlKey[1], `": `)
 		f.any(b, m[k])
 
-		if strWidth(b.String())+l > f.width {
+		if f.strWidth(b.String())+l > f.width {
 			return f.objNL(w, m)
 		}
 	}
@@ -287,7 +287,7 @@ func (f *Formatter) objNL(w io.Writer, m map[string]any) bool {
 		b := new(strings.Builder)
 		if f.any(b, m[k]) {
 			multi[k] = 1
-		} else if ll := strWidth(k); ll > l {
+		} else if ll := f.strWidth(k); ll > l {
 			l = ll /// Don't align multiline values.
 		}
 		output[k] = b.String()
@@ -314,7 +314,7 @@ func (f *Formatter) objNL(w io.Writer, m map[string]any) bool {
 		//
 		// The trick bit here is correctly aligning the indent; we don't have
 		// this information yet when writing the value above.
-		if ll := l - strWidth(string(kk)); multi[k] == 0 && ll > 0 {
+		if ll := l - f.strWidth(string(kk)); multi[k] == 0 && ll > 0 {
 			pad = strings.Repeat(" ", ll)
 		}
 		fmt.Fprint(w, f.indent(0),
