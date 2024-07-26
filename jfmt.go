@@ -156,7 +156,7 @@ func (f *Formatter) any(w io.Writer, j any) bool {
 		}
 		return false
 	case float64:
-		fl := strconv.FormatFloat(jj, 'f', 0, 64)
+		fl := strconv.FormatFloat(jj, 'f', -1, 64)
 		fmt.Fprint(w, f.hlNum[0], fl, f.hlNum[1])
 		return false
 	case string:
