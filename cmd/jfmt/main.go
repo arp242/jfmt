@@ -19,6 +19,7 @@ Usage: jfmt [-wlic] [file...]
                     this. Default is terminal width or 100. Set to 1 to always
                     use line breaks.
     -i, -indent     Indentation string; defaults to four spaces.
+    -p, -prefix     Prefix every line with the given string.
     -c, -color      Use colours in output: auto (default), mono, yes/always,
                     no/never.
 `[1:]
@@ -30,6 +31,7 @@ func main() {
 		write  = f.Bool(false, "w", "write")
 		length = f.Int(0, "l", "length")
 		indent = f.String("    ", "i", "indent")
+		prefix = f.String("", "p", "prefix")
 		color  = f.String("auto", "c", "color")
 	)
 	zli.F(f.Parse())
@@ -50,7 +52,7 @@ func main() {
 	if !length.Set() {
 		width, _, _ = zli.TerminalSize(os.Stdout.Fd())
 	}
-	ff := jfmt.NewFormatter(width, "", indent.String())
+	ff := jfmt.NewFormatter(width, prefix.String(), indent.String())
 	if write.Bool() {
 		*color.Pointer() = "never"
 	}
@@ -80,6 +82,7 @@ func main() {
 	}
 
 	defer f.Profile()()
+	fmt.Print(prefix.String())
 	if stdin {
 		if zli.IsTerminal(os.Stdin.Fd()) {
 			fmt.Fprintf(os.Stderr, f.Program+": reading from stdin...\r")
