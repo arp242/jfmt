@@ -77,7 +77,7 @@ func (f *Formatter) Highlight(what, start, stop string) {
 	}
 }
 
-// Format the reader to the writer.
+// Format JSON text from the reader to the writer.
 func (f *Formatter) Format(w io.Writer, r io.Reader) error {
 	f.didTop = false
 	if f.width == 0 {
@@ -125,10 +125,34 @@ func (f *Formatter) Format(w io.Writer, r io.Reader) error {
 	return nil
 }
 
-// Format the string.
+// FormatValue formats the type as JSON.
+func (f *Formatter) FormatValue(w io.Writer, t any) error {
+	j, err := json.Marshal(t)
+	if err != nil {
+		return err
+	}
+	err = f.Format(w, bytes.NewReader(j))
+	return err
+}
+
+// Format the JSON string.
 func (f *Formatter) FormatString(j string) (string, error) {
 	b := new(strings.Builder)
 	err := f.Format(b, strings.NewReader(j))
+	if err != nil {
+		return "", err
+	}
+	return b.String(), nil
+}
+
+// FormatValueString formats the type as JSON.
+func (f *Formatter) FormatValueString(t any) (string, error) {
+	j, err := json.Marshal(t)
+	if err != nil {
+		return "", err
+	}
+	b := new(strings.Builder)
+	err = f.Format(b, bytes.NewReader(j))
 	if err != nil {
 		return "", err
 	}
