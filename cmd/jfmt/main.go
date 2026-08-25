@@ -85,7 +85,7 @@ func main() {
 	fmt.Print(prefix.String())
 	if stdin {
 		if zli.IsTerminal(os.Stdin.Fd()) {
-			fmt.Fprintf(os.Stderr, f.Program+": reading from stdin...\r")
+			fmt.Fprint(os.Stderr, f.Program+": reading from stdin...\r")
 			os.Stderr.Sync()
 		}
 		zli.F(ff.Format(os.Stdout, os.Stdin))

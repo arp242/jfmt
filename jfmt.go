@@ -2,15 +2,16 @@ package jfmt
 
 import (
 	"bytes"
-	"encoding/json"
+	"cmp"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 
 	"zgo.at/termtext"
-	"zgo.at/zstd/zbyte"
 	"zgo.at/zstd/zmap"
 )
 
@@ -83,46 +84,28 @@ func (f *Formatter) Format(w io.Writer, r io.Reader) error {
 	if f.width == 0 {
 		f.width = 100
 	}
-	in, err := io.ReadAll(r)
-	if err != nil {
-		return err
-	}
 
-	{
-		// TODO: this is a hack to allow "JSON lines"; should probably just include
-		// a copy/fork of json package.
-		//
-		// Also, would like better error reporting; another reason to fork.
-		pos := zbyte.IndexAll(in, []byte("}\n{"))
-		if len(pos) > 0 {
-			prev := 0
-			pos = append(pos, len(in)-2)
-			for _, p := range pos {
-				jj := in[prev : p+1]
-				prev = p + 2
-
-				var j any
-				err = json.Unmarshal(jj, &j)
-				if err != nil {
-					return err
-				}
-				f.any(w, j)
-				fmt.Fprint(w, "\n")
-				f.didTop = false
+	d := jsontext.NewDecoder(r)
+	for {
+		val, err := d.ReadValue()
+		if err != nil {
+			if err == io.EOF {
+				return nil
 			}
-			return nil
+			return err
 		}
-	}
 
-	var j any
-	err = json.Unmarshal(in, &j)
-	if err != nil {
-		return err
+		var j any
+		err = json.Unmarshal(val, &j)
+		if err != nil {
+			return err
+		}
+
+		// TODO: this should probably return write errors to w, but meh.
+		f.any(w, j)
+		fmt.Fprint(w, "\n")
+		f.didTop = false
 	}
-	// TODO: this should probably return write errors to w, but meh
-	f.any(w, j)
-	fmt.Fprint(w, "\n")
-	return nil
 }
 
 // FormatValue formats the type as JSON.
@@ -162,7 +145,6 @@ func (f *Formatter) FormatValueString(t any) (string, error) {
 func (f *Formatter) indent(mod int) string {
 	f.level += mod
 	return f.prefix + strings.Repeat(f.indentStr, f.level)
-
 }
 
 func (f *Formatter) any(w io.Writer, j any) bool {
@@ -320,11 +302,8 @@ func (f *Formatter) objNL(w io.Writer, m map[string]any) bool {
 
 	// TODO: maybe also sort on object size (longer ones go later)? Need
 	// to see how well that works.
-	sort.Strings(keys)
-	sort.SliceStable(keys, func(i, j int) bool { return multi[keys[i]] < multi[keys[j]] })
-	// Go 1.21
-	//slices.Sort(keys)
-	//slices.SortStableFunc(keys, func(a, b string) int { return cmp.Compare(multi[a], multi[b]) })
+	slices.Sort(keys)
+	slices.SortStableFunc(keys, func(a, b string) int { return cmp.Compare(multi[a], multi[b]) })
 
 	for i, k := range keys {
 		if i > 0 {
